@@ -4,16 +4,22 @@ import com.daggerbasicspractice.MainActivity
 import dagger.Binds
 import dagger.Module
 import dagger.android.AndroidInjector
+import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 
-@Module(subcomponents = [MainActivityComponent::class])
+@Module
 abstract class ActivityBuilderModule {
 
-//    this will tell dagger that main activity is injectable
-    @Binds
-    @IntoMap
-    @ClassKey(MainActivity::class)
-    abstract fun bindMainActivity(builder: MainActivityComponent.Factory): AndroidInjector.Factory<*>
+    /*
+        this will tell dagger that MainActivity is injectable,
+        behind the scene dagger will create a subcomponent assign MainActivityModule to that
+        subcomponent and will create Component.Factory inside that subcomponent and then will add
+        that Component.Factory to multi bindings, same procedure we did before using ContributesAndroidInjector
+        dagger will perform itself
+     */
+    @ContributesAndroidInjector(modules = [MainActivityModule::class])
+    @MainActivityScope
+    abstract fun bindMainActivity(): MainActivity
 
 }
