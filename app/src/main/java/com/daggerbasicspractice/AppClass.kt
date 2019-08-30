@@ -3,20 +3,18 @@ package com.daggerbasicspractice
 import android.app.Application
 import com.daggerbasicspractice.di.DaggerAppComponent
 import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
 class AppClass :
-    Application(),
-    HasAndroidInjector {
+    DaggerApplication() {
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
+        DaggerAppComponent
+        .factory()
+        .create(this)
 
-    /*
-    * Dispatching android injector facilitates injection of android specific classes
-    * such as activities fragments and broadcast receivers
-    * */
-    @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
@@ -28,5 +26,4 @@ class AppClass :
 
     }
 
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }

@@ -18,7 +18,7 @@ abstract class ActivityBuilderModule {
         that Component.Factory to multi bindings, same procedure we did before using ContributesAndroidInjector
         dagger will perform itself
      */
-    @ContributesAndroidInjector(modules = [MainActivityModule::class])
+    @ContributesAndroidInjector(modules = [MainActivityModule::class, FragmentBuilderModule::class])
     @MainActivityScope
     abstract fun bindMainActivity(): MainActivity
 
