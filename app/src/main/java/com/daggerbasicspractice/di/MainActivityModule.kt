@@ -1,6 +1,6 @@
 package com.daggerbasicspractice.di
 
-import com.daggerbasicspractice.SampleClass
+import com.daggerbasicspractice.SampleCommonDependency
 import dagger.Module
 import dagger.Provides
 
@@ -10,6 +10,6 @@ object MainActivityModule {
     @JvmStatic
     @MainActivityScope
     @Provides
-    fun provideSampleClass() = SampleClass(8)
+    fun provideSampleClass() = SampleCommonDependency(8)
 
 }
