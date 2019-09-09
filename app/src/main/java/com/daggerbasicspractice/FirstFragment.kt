@@ -25,7 +25,7 @@ class FirstFragment : DaggerFragment() {
     @Inject
     lateinit var sampleFragmentDependency: SampleFirstFragmentDependency
     @Inject
-    lateinit var sampleClass:SampleClass
+    lateinit var sampleFirstFragmentDependency:SampleFirstFragmentDependency
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +39,7 @@ class FirstFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
 
         Log.d("MyTag", sampleFragmentDependency.toString()+" "+ sampleFragmentDependency.toString())
-        Log.d("MyTag", sampleClass.toString())
+        Log.d("MyTag", sampleFirstFragmentDependency.toString())
     }
 
 }

@@ -10,20 +10,10 @@ import javax.inject.Inject
 
 class AppClass :
     DaggerApplication() {
+
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
         DaggerAppComponent
         .factory()
         .create(this)
-
-
-    override fun onCreate() {
-        super.onCreate()
-
-        DaggerAppComponent
-            .factory()
-            .create(this)
-            .inject(this)
-
-    }
 
 }
