@@ -3,18 +3,22 @@ package com.daggerbasicspractice
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.daggerbasicspractice.di.DaggerMyComponent
-import com.daggerbasicspractice.di.DaggerMySecondComponent
 import com.daggerbasicspractice.di.MyComponent
-import com.daggerbasicspractice.di.MySubComponent
+import com.daggerbasicspractice.di.my_subcomponent1.MySubComponent1
+import com.daggerbasicspractice.di.my_subcomponent3.MySubComponent3
+import com.daggerbasicspractice.di.my_subcomponent3.MySubComponent3Module
+import com.daggerbasicspractice.di.my_subcomponent_2.MySubComponent2
+import com.daggerbasicspractice.di.my_subcomponent_2.MySubComponent2Module
 import javax.inject.Inject
 import javax.inject.Named
 
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var sampleClass: SampleClass1
 
     lateinit var myComponent: MyComponent
+
+    @Inject
+    lateinit var subComponent3Builder: MySubComponent3.Builder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,45 +29,59 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         myComponent.inject(this)
-        println("sample Class1 " + sampleClass)
 
-        BuildSubComponent(myComponent)
+        BuildSubComponent1(myComponent)
+        BuildSubComponent2(myComponent)
+        BuildSubComponent3(subComponent3Builder)
 
     }
 
 
 }
 
-class BuildSubComponent constructor(myComponent: MyComponent) {
+class BuildSubComponent1 constructor(myComponent: MyComponent) {
 
-    lateinit var sampleClass1: SampleClass1
     @Inject
-    lateinit var sampleClass2: SampleClass2
+    lateinit var a: Integer
 
     init {
-        var subComponent = myComponent.addMySubComponent()
+        var subComponent = myComponent.addMySubComponent1()
 
         subComponent.inject(this)
 
-        println("sample Class1 " + sampleClass1)
-        println("sample Class2 " + sampleClass2)
-
-        BuildSecondComponent(subComponent)
+        println("SUBCOMPONENT 1 ${a}")
     }
 }
 
-class BuildSecondComponent constructor(mySubComponent: MySubComponent) {
-
+class BuildSubComponent2 constructor(myComponent: MyComponent) {
     @Inject
-    lateinit var sampleClass1: SampleClass1
+    lateinit var a: String
 
     init {
-        DaggerMySecondComponent
-            .builder()
-            .mySubComponent(mySubComponent)
+        var subComponent = myComponent.mySubComponent2Builder()
+            .mySubComponent2Module(MySubComponent2Module())
+            .build()
+
+        subComponent.inject(this)
+
+        println("SUBCOMPONENT 2 ${a}")
+    }
+}
+
+class BuildSubComponent3 constructor(myComponent: MySubComponent3.Builder) {
+
+
+    @Inject
+    lateinit var a: String
+
+
+    init {
+
+        myComponent
+            .mySubComponent3Module(MySubComponent3Module())
             .build()
             .inject(this)
 
-        println("sample Class1 " + sampleClass1)
+        println("SUBCOMPONENT 3 ${a}")
     }
 }
