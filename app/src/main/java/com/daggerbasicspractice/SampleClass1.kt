@@ -1,4 +1,4 @@
 package com.daggerbasicspractice
 
-class SampleClass1(var i: Int = 0) {
+class SampleClass1 constructor(var i: Int = 0) {
 }

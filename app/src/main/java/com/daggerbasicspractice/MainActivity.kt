@@ -1,69 +1,116 @@
 package com.daggerbasicspractice
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
-import com.daggerbasicspractice.di.DaggerMyComponent
-import com.daggerbasicspractice.di.DaggerMySecondComponent
-import com.daggerbasicspractice.di.MyComponent
-import com.daggerbasicspractice.di.MySubComponent
+import androidx.appcompat.app.AppCompatActivity
+import com.daggerbasicspractice.di.CustomComponent
+import com.daggerbasicspractice.di.CustomComponentBuilder
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
-import javax.inject.Named
 
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var sampleClass: SampleClass1
 
-    lateinit var myComponent: MyComponent
+    @Inject
+    lateinit var sampleClass1: SampleClass1
+
+    @Inject
+    lateinit var buildCustomComponent: BuildCustomComponent
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        myComponent = DaggerMyComponent
-            .builder()
-            .build()
 
-        myComponent.inject(this)
-        println("sample Class1 " + sampleClass)
+        println("print  " + sampleClass)
+        println("print  " + sampleClass1)
 
-        BuildSubComponent(myComponent)
+        val entryPointTest = BuildEntryPoint()
+        entryPointTest.attachSampleClass3(applicationContext)
+        entryPointTest.attachSampleClass2(applicationContext)
 
+
+        buildCustomComponent.execute()
     }
 
 
 }
 
-class BuildSubComponent constructor(myComponent: MyComponent) {
+class BuildEntryPoint {
 
-    lateinit var sampleClass1: SampleClass1
-    @Inject
-    lateinit var sampleClass2: SampleClass2
+    //    Entry point is used for classes in which injection is not supported by hilt
+//    via default components like ActivityComponent AppComponent etc
+    @EntryPoint
+    @InstallIn(ApplicationComponent::class)
+    interface SampleClassInterface {
+        fun getSampleClass3(): SampleClass3
+        fun getSampleClass2(): SampleClass2
+    }
 
-    init {
-        var subComponent = myComponent.addMySubComponent()
+    fun attachSampleClass3(context: Context) {
+//        this  fromApplication function is just like get function inside component if scoped will always give
+//        same instance within single build otherwise different instance eveyrtime
 
-        subComponent.inject(this)
+        //        this way is recommended to get entry ponint as it is more type safe
+        val sampleClass =
+            EntryPointAccessors.fromApplication(context, SampleClassInterface::class.java)
+                .getSampleClass3()
 
-        println("sample Class1 " + sampleClass1)
-        println("sample Class2 " + sampleClass2)
+        val sampleClassCheckingMultiInstance =
+            EntryPointAccessors.fromApplication(context, SampleClassInterface::class.java)
+                .getSampleClass3()
 
-        BuildSecondComponent(subComponent)
+        println("PRINT ${sampleClass}")
+        println("PRINT ${sampleClassCheckingMultiInstance}")
+
+    }
+
+    fun attachSampleClass2(context: Context) {
+//        this get is just like get function inside component if scoped will always give
+//        same instance within single build otherwise different instance eveyrtime
+        val sampleClass =
+            EntryPoints.get(context, SampleClassInterface::class.java).getSampleClass2()
+
+        println("PRINT ${sampleClass}")
     }
 }
 
-class BuildSecondComponent constructor(mySubComponent: MySubComponent) {
+@ActivityScoped
+class BuildCustomComponent @Inject constructor(private val componentBuilder: CustomComponentBuilder) {
 
-    @Inject
-    lateinit var sampleClass1: SampleClass1
+    @EntryPoint
+    @InstallIn(CustomComponent::class)
+    interface SampleClassInterface {
+        fun getSampleClass4(): SampleClass4
+        fun getSampleClass5(): SampleClass5
+    }
 
-    init {
-        DaggerMySecondComponent
-            .builder()
-            .mySubComponent(mySubComponent)
-            .build()
-            .inject(this)
 
-        println("sample Class1 " + sampleClass1)
+    fun execute() {
+
+        val component = componentBuilder.sampleClass4(SampleClass4()).build()
+
+        val sampleClassProvider =
+            EntryPoints.get(
+                component,
+                SampleClassInterface::class.java
+            )
+
+//        this get is just like get function inside component if scoped will always give
+//        same instance within single build otherwise different instance eveyrtime
+        println("PRINT ${sampleClassProvider.getSampleClass4()}")
+        println("PRINT ${sampleClassProvider.getSampleClass5()}")
+
     }
 }

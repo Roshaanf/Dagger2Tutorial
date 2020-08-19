@@ -1,8 +1,8 @@
 package com.daggerbasicspractice
 
-import com.daggerbasicspractice.di.MySecondComponentScope
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@MySecondComponentScope
-class SampleClass3  @Inject constructor(){
+@Singleton
+class SampleClass3 @Inject constructor() {
 }
